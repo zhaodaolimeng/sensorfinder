@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ac.ictwsn.sensorfinder.service.SearchService;
+import ac.ictwsn.sensorfinder.service.index.LuceneService;
 import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
 import ac.ictwsn.sensorfinder.web.model.D3Response;
 import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
@@ -24,6 +25,8 @@ public class SearchController {
 	
 	private static final Logger logger = Logger.getLogger(SearchController.class);
 	
+	@Autowired
+	private LuceneService luceneService;
 	@Autowired
 	private SearchService searchService;
 	
@@ -87,7 +90,7 @@ public class SearchController {
 		try {
 			logger.info("Request = " + request.getQuery());
 			HashMap<String, Object> content = new HashMap<String, Object>();
-			content.put("result", searchService.search(request.getQuery()));
+			content.put("result", luceneService.search(request.getQuery()));
 			response.setContent(content);
 		} catch (IOException | InvalidTokenOffsetsException e) {
 			e.printStackTrace();

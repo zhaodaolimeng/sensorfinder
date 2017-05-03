@@ -197,9 +197,7 @@ class Statistics {
 		
 		Collections.sort(dataList, new Comparator<Pair<Double, Integer>>() {
 			public int compare(Pair<Double, Integer> arg0, Pair<Double, Integer> arg1) {
-				if(arg0.getFirst() > arg1.getFirst()) return 1;
-				if(arg0.getFirst() < arg1.getFirst()) return -1;
-				return 0;
+				return Double.compare(arg0.getFirst(), arg1.getFirst());
 			}
 		});
 		

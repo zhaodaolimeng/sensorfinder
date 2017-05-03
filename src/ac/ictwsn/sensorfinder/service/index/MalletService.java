@@ -39,6 +39,8 @@ public class MalletService {
 	// In-memory index of mallet dmr result
 	HashMap<String, List<Double>> sensorTopics; // topics per each sensor
 	List<String> sensorNameList;
+	List<String> wordDict;
+	HashMap<String, Double[]> wordTopics; //phi, will be used for query, need pre-load
 	
 	/**
 	 * Check and register mallet index to memory before service is called.
@@ -57,10 +59,22 @@ public class MalletService {
 	public void loadDMRIndex(){
 		try {
 			sensorNameList = buildSensorMap();
-			FileReader fr = new FileReader(indexPath + "/" + "dmr-topics.txt");
-			BufferedReader br = new BufferedReader(fr);
 			
-			logger.info("Prepare in-memory storage...");
+			// Load dictionary
+			logger.info("Prepare word dictionary for query filtering ...");
+			FileReader fr = new FileReader(indexPath + "/" + "dictionary.txt");
+			BufferedReader br = new BufferedReader(fr);
+			String word = "";
+			wordDict = new ArrayList<String>();
+			while((word = br.readLine()) != null)
+				this.wordDict.add(word);
+			br.close();
+			fr.close();
+			
+			// Load topic vector theta
+			logger.info("Prepare in-memory DMR index...");
+			fr = new FileReader(indexPath + "/" + "dmr-topics.txt");
+			br = new BufferedReader(fr);
 			sensorTopics = new HashMap<String, List<Double>>();
 			String line = null;
 			String[] topicstr = null;
@@ -79,6 +93,10 @@ public class MalletService {
 			}
 			br.close();
 			fr.close();
+			
+			// Load topic-word relationship of original documents z
+			
+			
 		} catch (FileNotFoundException f404){
 			f404.printStackTrace();
 			logger.error("Mallet index not found!");
@@ -130,6 +148,10 @@ public class MalletService {
 	
 	public List<String> getNameList(){
 		return this.sensorNameList;
+	}
+	
+	public List<String> getDictionary(){
+		return this.wordDict;
 	}
 	
 }

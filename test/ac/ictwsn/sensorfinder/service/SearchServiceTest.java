@@ -50,7 +50,7 @@ public class SearchServiceTest extends AbstractTransactionalJUnit4SpringContextT
 		for(Feature feature : featureRepo.findAll()){
 			long startTime = System.currentTimeMillis();
 			String tags = feedRepo.findById(feature.getFeedid()).getTags();
-			searchService.search(tags);
+			searchService.searchByLuceneAndTopic(tags);
 			
 			long endTime   = System.currentTimeMillis();
 			timeList.add(endTime - startTime);
