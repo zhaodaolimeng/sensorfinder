@@ -14,7 +14,6 @@ public interface FeatureRepository extends JpaRepository<Feature, Long> {
 	
 	public Feature findByFeedidAndStreamid(Long feedid, String streamid);
 	
-	public List<Feature> findAll();
 	
 	@Query("select min(f.created) from Feature f")
 	public Date findMinCreated();

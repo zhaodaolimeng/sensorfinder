@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ac.ictwsn.sensorfinder.service.SearchService;
 import ac.ictwsn.sensorfinder.service.index.LuceneService;
+import ac.ictwsn.sensorfinder.service.index.MalletService;
 import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
 import ac.ictwsn.sensorfinder.web.model.D3Response;
 import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
@@ -27,6 +28,8 @@ public class SearchController {
 	
 	@Autowired
 	private LuceneService luceneService;
+	@Autowired
+	private MalletService malletService;
 	@Autowired
 	private SearchService searchService;
 	
@@ -61,7 +64,7 @@ public class SearchController {
 		
 		D3Response response = null;
 		if(request.getGraphType().equals("Topic vector")){
-			response = searchService.visualQueryForTopic(
+			response = malletService.visualQueryForTopic(
 					request.getFeedid(), 
 					request.getStreamid(), 
 					numOfSensorsToBeListed);

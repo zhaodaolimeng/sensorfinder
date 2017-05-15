@@ -6,20 +6,33 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.math.linear.ArrayRealVector;
+import org.apache.commons.math.linear.RealVector;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.cjk.CJKAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.Terms;
+import org.apache.lucene.index.TermsEnum;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.highlight.Fragmenter;
 import org.apache.lucene.search.highlight.Highlighter;
@@ -29,6 +42,7 @@ import org.apache.lucene.search.highlight.SimpleHTMLFormatter;
 import org.apache.lucene.search.highlight.SimpleSpanFragmenter;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -42,6 +56,7 @@ import ac.ictwsn.sensorfinder.entities.Sensor;
 import ac.ictwsn.sensorfinder.repositories.SensorRepository;
 import ac.ictwsn.sensorfinder.task.LuceneIndexingTask;
 import ac.ictwsn.sensorfinder.task.TaskState;
+import ac.ictwsn.sensorfinder.utils.IndexUtil;
 
 @Service
 @Transactional
@@ -164,6 +179,135 @@ public class LuceneService {
 			logger.error("Error parsing query ... ");
 		} 
 		return result;
+	}
+	
+	public ResultDTO computeLuceneScore(String queryStr, int sensorNum){
+		
+		
+		List<SensorDocument> doclist = new ArrayList<SensorDocument>();
+		try {
+			CJKAnalyzer analyzer = new CJKAnalyzer();
+			QueryParser queryParse = new QueryParser("content", analyzer);
+			Query query = queryParse.parse(queryStr);
+			
+			Directory luceneDirectory = FSDirectory.open(Paths.get(indexPath));
+			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(luceneDirectory));
+			TopDocs hits=searcher.search(query, sensorNum);
+			
+			for(ScoreDoc scoreDoc : hits.scoreDocs){
+				Document doc = searcher.doc(scoreDoc.doc);
+				Long tfeedid = Long.parseLong(doc.get("feedid"));
+				String sensorid = doc.get("sensorid");
+				doclist.add(new SensorDocument(tfeedid, sensorid, 1.0*scoreDoc.score));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		ResultDTO result = new ResultDTO();
+		result.setItemlist(Arrays.asList(IndexUtil.normalization(doclist)));
+		return result;
+	}
+	
+	
+	/**
+	 * 
+	 * @param sstr sensor id string in format: feedid+","+streamid
+	 * @return
+	 */
+	public Double[][] docSimilarity(List<String> sstr) {
+		int setSize = sstr.size();
+		int DEFAULT_RESULT_SET = 10; //result count of exact search should be 1
+		
+		Double[][] matrix = new Double[setSize][setSize];
+		List<RealVector> tlist = new ArrayList<RealVector>();
+		final Set<String> terms = new HashSet<>();  // dictionary
+		
+		try{
+			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(directory));
+			// get vector for each feed sensor pair
+			for (int i = 0; i < setSize; i++) {
+				BooleanQuery q = new BooleanQuery.Builder()
+						.add(new TermQuery(new Term("feedid", sstr.get(i))), BooleanClause.Occur.SHOULD)
+						.add(new TermQuery(new Term("sensorid", sstr.get(i))), BooleanClause.Occur.SHOULD)
+						.build();
+				TopDocs hits = searcher.search(q, DEFAULT_RESULT_SET);
+				int docid = hits.scoreDocs[0].doc;
+				Terms termVector = searcher.getIndexReader().getTermVector(docid, "content");
+				
+				// get frequencies
+				TermsEnum termsEnum = termVector.iterator();
+				Map<String, Integer> frequencies = new HashMap<>();
+		        BytesRef text = null;
+		        while ((text = termsEnum.next()) != null) {
+		            String term = text.utf8ToString();
+		            int freq = (int) termsEnum.totalTermFreq();
+		            frequencies.put(term, freq);
+		            terms.add(term);
+		        }
+		        
+		        // change to real vector
+		        RealVector vector = new ArrayRealVector(terms.size());
+		        int cnt = 0;
+		        for (String term : terms) {
+		            int value = frequencies.containsKey(term) ? frequencies.get(term) : 0;
+		            vector.setEntry(cnt++, value);
+		        }
+		        tlist.add((RealVector) vector.mapDivide(vector.getL1Norm()));
+			}
+			
+			// use term vector to compute similarity
+			for(int i=0; i<setSize; i++){
+				for (int j = 0; j < setSize; j++) {
+					if(i==j) continue;
+					RealVector v0 = tlist.get(i);
+					RealVector v1 = tlist.get(j);
+					matrix[i][j] = (v0.dotProduct(v1)) / (v0.getNorm() * v1.getNorm());
+				}
+			}
+		}catch(IOException ioe){
+			logger.error("Similar search error!");
+		}
+		return matrix;
+	}
+	
+	
+	/**
+	 * Only load necessary documents(with a count of topSensorNum)
+	 * @param tsensor
+	 * @param sensornum
+	 * @return
+	 */
+	public SensorDocument[] rankDocument(Sensor tsensor, Integer sensornum){
+		logger.info("Ranking document similarity for all sensors ...");
+		List<SensorDocument> doclist = new ArrayList<SensorDocument>();
+		try {
+			Feed tfeed = tsensor.getFeed();
+			String queryStr = tfeed.getDescription() + " "
+					+ tfeed.getTags() + " " + tfeed.getTitle() + " "
+					+ tsensor.getTags() + " " + tsensor.getStreamId();
+			CJKAnalyzer analyzer = new CJKAnalyzer();
+			QueryParser queryParse = new QueryParser("content", analyzer);		
+			Query query = queryParse.parse(queryStr);
+			
+			Directory luceneDirectory = FSDirectory.open(Paths.get(indexPath));
+			IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(luceneDirectory));
+			TopDocs hits=searcher.search(query, sensornum);
+			
+			for(ScoreDoc scoreDoc : hits.scoreDocs){
+				Document doc = searcher.doc(scoreDoc.doc);
+				Long tfeedid = Long.parseLong(doc.get("feedid"));
+				String sensorid = doc.get("sensorid");
+				doclist.add(new SensorDocument(tfeedid, sensorid, 1.0*scoreDoc.score));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return IndexUtil.normalization(doclist);
 	}
 
 }

@@ -10,14 +10,14 @@ package ac.ictwsn.sensorfinder.dto;
  * @author limeng
  *
  */
-public class SensorDocument {
+public class SensorDocument implements Comparable<SensorDocument>{
 	
 	Long feedid;
 	String sensorid; // streamid in database, could be description
 	String feedDescription;
 	String feedTags;
 	String sensorTags;
-	Double score;
+	Double score; //similarity
 	
 	String snapshot;
 	String createdTime;
@@ -40,6 +40,19 @@ public class SensorDocument {
 		this.sensorTags = sensorTags;
 	}
 	
+	public SensorDocument(Long feedid, String sensorid, Double score){
+		this.feedid = feedid;
+		this.sensorid = sensorid;
+		this.score = score;
+	}
+	
+	public SensorDocument(String feedsensorid, Double score){
+		String[] fs = feedsensorid.split(",");
+		this.feedid = Long.parseLong(fs[0]);
+		this.sensorid = fs[1];
+		this.score = score;
+	}
+	
 	public String getSnapshotWithUpdate(){
 		StringBuilder sb = new StringBuilder();
 		this.snapshot = sb.append(this.feedTitle).append(' ')
@@ -49,7 +62,15 @@ public class SensorDocument {
 				.append(this.sensorTags).append(' ').toString();
 		return this.snapshot;
 	}
+	
+	public int compareTo(SensorDocument sensor){
+		return Double.compare(this.score, sensor.score);
+	}
 
+	
+	public String getFeedSensorStr(){
+		return this.feedid + "," + this.sensorid;
+	}
 	public String getFeedTitle() {
 		return feedTitle;
 	}

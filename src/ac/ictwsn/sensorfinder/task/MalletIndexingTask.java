@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -41,7 +40,6 @@ public class MalletIndexingTask implements Runnable{
 	private final String FEATURE_FILE = "feature.txt";
 	private final String TEXT_FILE = "text.txt";
 	private final String ID_FILE = "id.txt";
-	private final String DICT_FILE = "dictionary.txt";
 	private final String DUMP_FILE = "dump.txt"; // save additional output
 	private final String TOPIC_WORDS = "topic-words.txt"; // top words in a topics, used for debug
 	
@@ -97,6 +95,7 @@ public class MalletIndexingTask implements Runnable{
 		pw.close();
 		
 		HashMap<String, Integer> locationType = new HashMap<String, Integer>();
+		
 		for(Feature s : sensorList){
 			// Remove url and stopwords to build text input
 			String snapshot = s.getDoc()
@@ -134,14 +133,7 @@ public class MalletIndexingTask implements Runnable{
 				wordCnt.put(s, 1 + wordCnt.get(s));
 			}
 		}
-		
-		// save dictionary
-		PrintWriter dictpw = new PrintWriter(indexPath + '/' + this.DICT_FILE);
-		for(Entry<String, Integer> entry : wordCnt.entrySet())
-			if(entry.getValue() >= this.FREQUENCE_LIMIT)
-				dictpw.write(entry.getKey());
-		dictpw.close();
-		
+
 		// save corpus
 		for(int i = 0; i<idlist.size(); i++){
 			String rstr = "";
