@@ -1,6 +1,6 @@
 <%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
-<%@include file="../taglib.jsp" %>
+<%@include file="../../taglib.jsp" %>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -35,7 +35,6 @@
 <script src="https://code.jquery.com/jquery-1.12.3.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script lang="javascript">
-
 
 $('#nav_list').children().eq(6).addClass('active')
 

@@ -16,14 +16,20 @@ public class StaticPageController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "/{varPost}", method = RequestMethod.GET)
-	public String pageHop(@PathVariable("varPost") String destPage) {
+	@RequestMapping(value = "/admin/{varPost}", method = RequestMethod.GET)
+	public String adminHop(@PathVariable("varPost") String destPage) {
 		logger.info("To Page = " + destPage);
-		return destPage;
+		return "admin/" + destPage;
+	}
+	
+	@RequestMapping(value = "/user/{varPost}", method = RequestMethod.GET)
+	public String userHop(@PathVariable("varPost") String destPage) {
+		logger.info("To Page = " + destPage);
+		return "user/" + destPage;
 	}
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String welcome(){
-		return "index";
+		return "user/index";
 	}
 }

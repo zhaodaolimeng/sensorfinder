@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <decorators>
-<!-- 	<excludes> -->
-<!-- 		<pattern>/index.*</pattern> -->
-<!-- 	</excludes> -->
-	<decorator name="authorizedViewDecorator" page="/WEB-INF/layout.jsp">
-		<pattern>/*</pattern>
+    <excludes>
+        <pattern>/user/*</pattern>
+    </excludes>
+	<decorator name="adminViewDecorator" page="/WEB-INF/admin-layout.jsp">
+		<pattern>/admin/*</pattern>
 	</decorator>
 </decorators>

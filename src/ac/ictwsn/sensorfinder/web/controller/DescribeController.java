@@ -1,10 +1,8 @@
 package ac.ictwsn.sensorfinder.web.controller;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import ac.ictwsn.sensorfinder.service.DescribeService;
-import ac.ictwsn.sensorfinder.service.index.LuceneService;
 import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
 import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
 

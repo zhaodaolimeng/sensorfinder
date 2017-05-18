@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import ac.ictwsn.core.util.Pair;
 import ac.ictwsn.sensorfinder.dto.ResultDTO;
 import ac.ictwsn.sensorfinder.dto.SensorDocument;
 import ac.ictwsn.sensorfinder.entities.Feature;
@@ -103,17 +106,64 @@ public class SearchService {
 	 * @throws IOException
 	 * @throws InvalidTokenOffsetsException
 	 */
-	public ResultDTO searchByLuceneAndTopic(String queryStr) 
+	public ResultDTO searchByLuceneAndTopic(String queryStr, int resultNum) 
 			throws IOException, InvalidTokenOffsetsException {
+		
+		final double beta = 0.4;
 		
 		ResultDTO dmrScore = ms.computeDMRScore(queryStr);
 		ResultDTO luceneScore = ls.computeLuceneScore(queryStr, ms.getSensorNames().size());
 		
-		//TODO merge it
+		List<SensorDocument> dmrList = dmrScore.getItemlist();
+		List<SensorDocument> lucList = luceneScore.getItemlist();
+		HashMap<Pair<Long, String>, SensorDocument> dmrRank = new HashMap<Pair<Long, String>, SensorDocument>();
+		HashMap<Pair<Long, String>, SensorDocument> lucRank = new HashMap<Pair<Long, String>, SensorDocument>();
 		
+		for(SensorDocument sd : dmrList){
+			Pair<Long, String> pair = new Pair<Long, String>(sd.getFeedid(), sd.getSensorid()); 
+			dmrRank.put(pair, sd);			
+		}
+		for(SensorDocument sd : lucList){
+			Pair<Long, String> pair = new Pair<Long, String>(sd.getFeedid(), sd.getSensorid());
+			if(dmrRank.containsKey(pair))
+				lucRank.put(pair, sd);
+		}
+		HashMap<Pair<Long, String>, Double> mergedRank = new HashMap<Pair<Long, String>, Double>();
+		List<SensorDocument> docList = new ArrayList<SensorDocument>(); 
 		
+		// intersection set of dmr and lucene
+		for(Entry<Pair<Long, String>, SensorDocument> entry : dmrRank.entrySet()){
+			Pair<Long, String> pair = entry.getKey();
+			if(lucRank.containsKey(entry.getKey())){
+				mergedRank.put(entry.getKey(), dmrRank.get(entry.getKey()).getScore());
+				Double lrank = - Math.log(lucRank.get(pair).getScore());
+				Double drank = Math.log(entry.getValue().getScore());
+				SensorDocument sensor = new SensorDocument(
+						pair.getFirst(), pair.getSecond(), (1-beta) * lrank + beta * drank); 
+				docList.add(sensor);
+			}
+		}
 		
-		return null;
+		Collections.sort(docList, new Comparator<SensorDocument>(){
+			@Override
+			public int compare(SensorDocument arg0, SensorDocument arg1) {
+				return Double.compare(arg0.getScore(), arg1.getScore());
+			}
+		});
+		
+		ResultDTO result = new ResultDTO();
+		if(resultNum != -1)
+			result.setItemlist(docList.subList(0, resultNum));
+		
+		for(SensorDocument sd : docList){
+			Pair<Long, String> pair = new Pair<Long, String>(sd.getFeedid(), sd.getSensorid());
+			String lucFeedDesc = lucRank.get(pair).getFeedDescription();
+			String lucSensorDesc = lucRank.get(pair).getSensorDescription();
+			sd.setFeedDescription(lucFeedDesc);
+			sd.setSensorDescription(lucSensorDesc);
+		}
+		result.setItemlist(docList);
+		return result;
 	}
 	
 	

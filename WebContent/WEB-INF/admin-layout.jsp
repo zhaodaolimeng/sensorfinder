@@ -63,34 +63,12 @@ body {
 			</ul>
 		</div>
 	</nav>
-
-<!-- 	<div class="container-fluid"> -->
-<!-- 		<div class="row-fluid" > -->
-<!-- 			<div class="span3"> -->
-<!-- 				<div class="sidebar-offcanvas" id="nav_list"> -->
-<!-- 					<a href="index" class="list-group-item">Index</a> -->
-<!-- 					<a class="list-group-item">IoT Device Crawl</a> -->
-<!-- 					<a href="crawl-stats" class="list-group-item">Data Overview</a> -->
-<!-- 					<a href="crawl-metadata" class="list-group-item">Fetch Metadata</a> -->
-<!-- 					<a class="list-group-item">Device Information Indexing</a> -->
-<!-- 					<a href="idx-datacheck" class="list-group-item">Data Check</a> -->
-<!-- 					<a href="idx-reverseindex" class="list-group-item">Build Index</a> -->
-<!-- 					<a class="list-group-item">Search &amp; Virtualization</a> -->
-<!-- 					<a href="vis-searchdevice" class="list-group-item">Search device</a> -->
-<!-- 					<a href="vis-entitynetwork" class="list-group-item">IoT Entity Networks</a> -->
-<!-- 					<a href="vis-topicanalysis" class="list-group-item">IoT Topics Analysis</a> -->
-<!-- 					<a href="vis-devicepattern" class="list-group-item">Analyse IoT Device Pattern</a> -->
-<!-- 				</div> /.well -->
-<!-- 			</div> /span -->
-<%-- 			<decorator:body /> --%>
-<!-- 		</div> -->
-<!-- 	</div> -->
 	
 	<div class="container-fluid">
 		<div class="row-fluid">
 			<div class="col-sm-3">
 				<ul class="nav sidebar-nav" id="nav_list">
-					<li class="sidebar-brand"><a href=".">Index</a></li>
+					<li><a href="index" class="active">Index</a></li>
 					<li class="sidebar-brand"><a href="#">IoT Device Crawl</a></li>
 					<li><a href="crawl-stats">Data Overview</a></li>
 					<li><a href="crawl-metadata">Fetch Metadata</a></li>

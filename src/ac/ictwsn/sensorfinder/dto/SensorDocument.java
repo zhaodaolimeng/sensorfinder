@@ -27,6 +27,13 @@ public class SensorDocument implements Comparable<SensorDocument>{
 	
 	public SensorDocument(){}
 	
+	public boolean equals(Object obj){
+		SensorDocument sd = (SensorDocument)obj; 
+		if(sd.getFeedid() == this.feedid && sd.getSensorid() == this.sensorid)
+			return true;
+		return false;
+	}
+	
 	public SensorDocument(
 			Long feedid, String feedTitle, String feedDescription, String feedTags,  
 			String sensorid, String sensorTags){

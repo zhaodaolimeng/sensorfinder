@@ -21,7 +21,7 @@ import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
 import ac.ictwsn.sensorfinder.web.model.SearchRequest;
 
 @RestController
-@RequestMapping("/search")
+@RequestMapping("/admin/search")
 public class SearchController {
 	
 	private static final Logger logger = Logger.getLogger(SearchController.class);
@@ -80,13 +80,35 @@ public class SearchController {
 	}
 	
 	/**
-	 * Create full text search
+	 * Full text search using lucene
 	 * @param request
 	 * @return
 	 */
 	@RequestMapping(value = "search", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody AjaxResponse fullTextQuery(
+			@RequestBody IndexBuildRequest request){
+		
+		AjaxResponse response = new AjaxResponse();
+		try {
+			logger.info("Request = " + request.getQuery());
+			HashMap<String, Object> content = new HashMap<String, Object>();
+			content.put("result", luceneService.search(request.getQuery()));
+			response.setContent(content);
+		} catch (IOException | InvalidTokenOffsetsException e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	/**
+	 * Mixed search using topics and full text
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "mixedsearch", method = RequestMethod.POST, 
+			consumes = "application/json", produces = "application/json")
+	public @ResponseBody AjaxResponse topicAndTextQuery(
 			@RequestBody IndexBuildRequest request){
 		
 		AjaxResponse response = new AjaxResponse();

@@ -11,6 +11,8 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -273,6 +275,7 @@ public class MalletService {
 			for(int i=0; i<K; i++){
 				if(dvec[i] == null) dvec[i] = 0.0;
 				dvec[i] += alpha;
+				qvec[i] += alpha;
 				distance += (qvec[i] - dvec[i]) * Math.log(qvec[i]/dvec[i]);
 			}
 			SensorDocument doc = new SensorDocument();
@@ -281,6 +284,13 @@ public class MalletService {
 			doc.setScore(distance);
 			docList.add(doc);
 		}
+		
+		Collections.sort(docList, new Comparator<SensorDocument>(){
+			public int compare(SensorDocument arg0, SensorDocument arg1) {
+				return Double.compare(arg0.getScore(), arg1.getScore());
+			}
+		});
+		
 		ResultDTO result = new ResultDTO();
 		result.setItemlist(docList);
 		

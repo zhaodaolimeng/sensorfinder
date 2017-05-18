@@ -2,6 +2,7 @@ package ac.ictwsn.sensorfinder.service;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.apache.lucene.search.highlight.InvalidTokenOffsetsException;
 import org.junit.Test;
@@ -13,6 +14,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import ac.ictwsn.sensorfinder.config.AppConfig;
+import ac.ictwsn.sensorfinder.dto.ResultDTO;
+import ac.ictwsn.sensorfinder.dto.SensorDocument;
 import ac.ictwsn.sensorfinder.entities.Feature;
 import ac.ictwsn.sensorfinder.repositories.FeatureRepository;
 import ac.ictwsn.sensorfinder.repositories.FeedRepository;
@@ -32,8 +35,14 @@ public class SearchServiceTest extends AbstractTransactionalJUnit4SpringContextT
 	
 	
 	@Test
-	public void unitTest(){
-		System.out.println("Hello");
+	public void searchKeywordTest() throws IOException, InvalidTokenOffsetsException{
+		System.out.println("In search keyword test ...");
+		String q = "home solar power";
+		ResultDTO result = searchService.searchByLuceneAndTopic(q, 10);
+		System.out.println(result.getItemlist().size());
+		List<SensorDocument> slist = result.getItemlist(); 
+		for(int i=0; i<slist.size(); i++)
+			System.out.println(slist.get(i).getFeedid() + " " + slist.get(i).getSensorid());
 	}
 	
 	/**
@@ -44,7 +53,7 @@ public class SearchServiceTest extends AbstractTransactionalJUnit4SpringContextT
 	 * 
 	 */
 	@Test
-	public void searchTest() throws IOException, InvalidTokenOffsetsException{
+	public void searchTimeTest() throws IOException, InvalidTokenOffsetsException{
 		
 		System.out.println("In search test...");
 		
@@ -60,7 +69,7 @@ public class SearchServiceTest extends AbstractTransactionalJUnit4SpringContextT
 				if(tags.length() == 0) 
 					continue;
 				
-				searchService.searchByLuceneAndTopic(tags);
+				searchService.searchByLuceneAndTopic(tags, -1);
 				long endTime   = System.currentTimeMillis();
 				writer.println(tags.length() + "\t" + (endTime - startTime));
 				cnt++;

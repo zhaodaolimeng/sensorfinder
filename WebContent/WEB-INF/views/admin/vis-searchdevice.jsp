@@ -1,6 +1,6 @@
 <%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
-<%@include file="../taglib.jsp" %>
+<%@include file="../../taglib.jsp" %>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -28,12 +28,14 @@
 	</div>
 	
 	<div id="custom-search-input" class="row-fluid buttom-buffer">
-	    <div class="input-group col-md-8">
-		    <input id="query-string"  type="text" class="form-control buttom-buffer" placeholder="Search for...">
-		    	<span class="input-group-btn">
-		    	<button class="btn btn-default" type="button" id='search-btn'>Go!</button>
-		    </span>
-	    </div>
+		<div class="col-xs-12" style="height:50px;"></div>
+		    <div class="input-group col-md-8">
+			    <input id="query-string"  type="text" class="form-control buttom-buffer" placeholder="Search for...">
+			    	<span class="input-group-btn">
+			    	<button class="btn btn-default" type="button" id='search-btn'>Go!</button>
+			    </span>
+		    </div>
+		<div class="col-xs-12" style="height:50px;"></div>
 	</div>
 	
 	<div class="row-fluid">
@@ -63,7 +65,7 @@ var searchit = function(event) {
 		    	'Accept': 'application/json',
 		        'Content-Type': 'application/json' 
 		    },
-		    url: 'search/search',
+		    url: 'user/search/search',
 		    type: 'POST',
 		    data: JSON.stringify({query:text_val}),
 		    success : function(data) {

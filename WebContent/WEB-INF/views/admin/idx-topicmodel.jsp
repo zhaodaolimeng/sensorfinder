@@ -1,6 +1,6 @@
 <%@ page language="java" import="java.util.*" contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
-<%@include file="../taglib.jsp" %>
+<%@include file="../../taglib.jsp" %>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -93,7 +93,7 @@
 <script src="resources/js/jquery.min.js"></script>
 <script lang="javascript">
 
-$('#nav_list').children().eq(5).addClass('active')
+$('#nav_list').children().eq(7).addClass('active')
 
 $('#xively_count_all').on('click', function(event) {
 	$('#xively_count_all').text('Loading...');
