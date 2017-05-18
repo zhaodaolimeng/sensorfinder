@@ -198,7 +198,8 @@ public class LuceneService {
 				Document doc = searcher.doc(scoreDoc.doc);
 				Long tfeedid = Long.parseLong(doc.get("feedid"));
 				String sensorid = doc.get("sensorid");
-				doclist.add(new SensorDocument(tfeedid, sensorid, 1.0*scoreDoc.score));
+				SensorDocument sd = new SensorDocument(tfeedid, sensorid, 1.0*scoreDoc.score); 
+				doclist.add(sd);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -41,8 +41,10 @@ public class SearchServiceTest extends AbstractTransactionalJUnit4SpringContextT
 		ResultDTO result = searchService.searchByLuceneAndTopic(q, 10);
 		System.out.println(result.getItemlist().size());
 		List<SensorDocument> slist = result.getItemlist(); 
-		for(int i=0; i<slist.size(); i++)
-			System.out.println(slist.get(i).getFeedid() + " " + slist.get(i).getSensorid());
+		for(int i=0; i<slist.size(); i++){
+			SensorDocument sd = slist.get(i); 
+			System.out.println(sd.getFeedid() + " " + sd.getSensorid() + " " + sd.getSnapshot());
+		}
 	}
 	
 	/**

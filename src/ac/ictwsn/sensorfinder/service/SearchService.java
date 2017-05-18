@@ -109,7 +109,7 @@ public class SearchService {
 	public ResultDTO searchByLuceneAndTopic(String queryStr, int resultNum) 
 			throws IOException, InvalidTokenOffsetsException {
 		
-		final double beta = 0.4;
+		final double beta = 0.1;
 		
 		ResultDTO dmrScore = ms.computeDMRScore(queryStr);
 		ResultDTO luceneScore = ls.computeLuceneScore(queryStr, ms.getSensorNames().size());
@@ -131,6 +131,13 @@ public class SearchService {
 		HashMap<Pair<Long, String>, Double> mergedRank = new HashMap<Pair<Long, String>, Double>();
 		List<SensorDocument> docList = new ArrayList<SensorDocument>(); 
 		
+		
+		Double maxLrank = Double.MIN_VALUE;
+		Double minLrank = Double.MAX_VALUE;
+		Double maxDrank = Double.MIN_VALUE;
+		Double minDrank = Double.MAX_VALUE;
+		
+		
 		// intersection set of dmr and lucene
 		for(Entry<Pair<Long, String>, SensorDocument> entry : dmrRank.entrySet()){
 			Pair<Long, String> pair = entry.getKey();
@@ -138,6 +145,12 @@ public class SearchService {
 				mergedRank.put(entry.getKey(), dmrRank.get(entry.getKey()).getScore());
 				Double lrank = - Math.log(lucRank.get(pair).getScore());
 				Double drank = Math.log(entry.getValue().getScore());
+				
+				maxLrank = Math.max(maxLrank, lrank);
+				minLrank = Math.min(minLrank, lrank);
+				maxDrank = Math.max(maxDrank, drank);
+				minDrank = Math.min(minDrank, drank);
+				
 				SensorDocument sensor = new SensorDocument(
 						pair.getFirst(), pair.getSecond(), (1-beta) * lrank + beta * drank); 
 				docList.add(sensor);
@@ -152,8 +165,8 @@ public class SearchService {
 		});
 		
 		ResultDTO result = new ResultDTO();
-		if(resultNum != -1)
-			result.setItemlist(docList.subList(0, resultNum));
+		if(resultNum != -1) docList = docList.subList(0, resultNum);
+		result.setItemlist(docList);
 		
 		for(SensorDocument sd : docList){
 			Pair<Long, String> pair = new Pair<Long, String>(sd.getFeedid(), sd.getSensorid());
@@ -161,6 +174,17 @@ public class SearchService {
 			String lucSensorDesc = lucRank.get(pair).getSensorDescription();
 			sd.setFeedDescription(lucFeedDesc);
 			sd.setSensorDescription(lucSensorDesc);
+			sd.setSnapshot(sd.getFeedDescription() + sd.getFeedTitle() + sd.getSensorLabel() + sd.getSensorTags());
+			
+			// check datastream_t
+			Sensor sensor = sensorRepo.findByFeedAndStreamid(sd.getFeedid(), sd.getSensorid());
+			sd.setSensorLabel(sensor.getLabel());
+			
+			Feed feed = sensor.getFeed();
+			sd.setFeedTitle(feed.getTitle());
+			sd.setFeedDescription(feed.getDescription());
+			sd.setFeedTags(feed.getTags());
+			sd.getSnapshotWithUpdate();
 		}
 		result.setItemlist(docList);
 		return result;

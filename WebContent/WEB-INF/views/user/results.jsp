@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>simple-search</title>
+    <title>Sensor Finder</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -29,7 +29,7 @@
 			<div
 				class="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
 
-				<form>
+				<form id="input-form">
 					<div class="form-group text-center">
 						<label for="search-query">Sensor Finder</label> <input type="text"
 							class="form-control" id="search-query" name="search-query"
@@ -37,9 +37,8 @@
 					</div>
 
 					<div class="form-group text-center">
-						<button type="submit" class="btn btn-primary">Search</button>
-						<a id="advanced-search-button" class="btn btn-default">Advanced
-							search</a>
+						<a id="search-button" class="btn btn-primary">Search</a>
+						<a id="advanced-search-button" class="btn btn-default">Advanced search</a>
 					</div>
 
 					<div class="form-group advanced-search-panel">
@@ -135,110 +134,8 @@
 				<!-- Tab panes -->
 				<div class="tab-content">
 					<div role="tabpanel" class="tab-pane tab-body active" id="results1">
-						<div class="list-group">
-
-							<div class="panel panel-default list-group-item">
-								<div class="panel-body">
-									<div class="media">
-										<div class="media-left">
-											<a href="#"> <img class="media-object"
-												src="http://placehold.it/90x120" alt="...">
-											</a>
-										</div>
-										<div class="media-body">
-											<h4 class="media-heading">Trapézio Descendente</h4>
-											Aqui é Body Builder Ipsum PORRA! Vo derrubar tudo essas
-											árvore do parque ibirapuera. Eita porra!, tá saindo da
-											jaula o monstro! Ajuda o maluco que tá doente. Não vai dá
-											não. Vai subir árvore é o caralho porra! Tá comigo porra.
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="panel panel-default list-group-item">
-								<div class="panel-body">
-									<div class="media">
-										<div class="media-left">
-											<a href="#"> <img class="media-object"
-												src="http://placehold.it/90x120" alt="...">
-											</a>
-										</div>
-										<div class="media-body">
-											<h4 class="media-heading">Saindo da Jaula</h4>
-											Eita porra!, tá saindo da jaula o monstro! Sai filho da
-											puta! É 13 porra! Sabe o que é isso daí? Trapézio
-											descendente é o nome disso aí. Vamo monstro! É esse que a
-											gente quer, é ele que nóis vamo buscar.
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="panel panel-default list-group-item">
-								<div class="panel-body">
-									<div class="media">
-										<div class="media-left">
-											<a href="#"> <img class="media-object"
-												src="http://placehold.it/90x120" alt="...">
-											</a>
-										</div>
-										<div class="media-body">
-											<h4 class="media-heading">É ele que nós vamos buscar</h4>
-											Vo derrubar tudo essas árvore do parque ibirapuera. Ó o
-											homem ali porra!, é 13 porra! É nóis caraio é trapezera
-											buscando caraio! Sai de casa comi pra caralho porra. Vai
-											subir árvore é o caralho porra! Bora caralho, você quer
-											ver essa porra velho.
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div class="panel panel-default list-group-item">
-								<div class="panel-body">
-									<div class="media">
-										<div class="media-left">
-											<a href="#"> <img class="media-object"
-												src="http://placehold.it/90x120" alt="...">
-											</a>
-										</div>
-										<div class="media-body">
-											<h4 class="media-heading">BIRL</h4>
-											Aqui nóis constrói fibra, não é água com músculo. Sabe
-											o que é isso daí? Trapézio descendente é o nome disso
-											aí. Vo derrubar tudo essas árvore do parque ibirapuera.
-											Aqui é bodybuilder porra! Boraaa, Hora do Show Porra. Vai
-											subir árvore é o caralho porra!
-										</div>
-									</div>
-								</div>
-							</div>
-							
-							
-							<div class="panel panel-default list-group-item">
-								<div class="panel-body">
-									<div class="media">
-										<div class="media-left">
-											<a href="#"> <img class="media-object"
-												src="http://placehold.it/90x120" alt="...">
-											</a>
-										</div>
-										<div class="media-body">
-											<h4 class="media-heading">Água com músculo</h4>
-											Aqui é bodybuilder porra! Que não vai dá rapaiz, não vai
-											dá essa porra. Eu quero esse 13 daqui a pouquinho aí.
-											AHHHHHHHHHHHHHHHHHHHHHH..., porra! Bora caralho, você quer
-											ver essa porra velho. É verão o ano todo vem cumpadi.
-										</div>
-									</div>
-								</div>
-							</div>
-
-							
-						</div>
+						<div class="list-group" id="search-result"></div>
 					</div>
-					
 					<div role="tabpanel" class="tab-pane tab-body" id="results2">
 						...</div>
 				</div>
@@ -251,8 +148,11 @@
 <script src="../resources/js/vendor/bootstrap.min.js"></script>
 <script src="../resources/js/main.js"></script>
 <script type="text/javascript">
+
+var caption_init = false;
+
 var searchit = function(event) {
-	var text_val = $('#query-string').val()
+	var text_val = $('#search-query').val()
 	if(text_val.length > 0){
 		console.log(text_val);		
 		$.ajax({
@@ -260,7 +160,7 @@ var searchit = function(event) {
 		    	'Accept': 'application/json',
 		        'Content-Type': 'application/json' 
 		    },
-		    url: 'user/search/search',
+		    url: 'search/mixedsearch',
 		    type: 'POST',
 		    data: JSON.stringify({query:text_val}),
 		    success : function(data) {
@@ -278,32 +178,35 @@ var searchit = function(event) {
 					metadata_str += '<div class="panel-body">';
 					metadata_str += '<div class="media">'
 					metadata_str += '<div class="media-left">'
-					metadata_str += '<a href="#"> <img class="media-object" src="http://placehold.it/90x120" alt="..."></a>';
+// 					metadata_str += '<a href="#"> <img class="media-object" src="' + geo_url(value['location']) + '" alt="..."></a>';
 					metadata_str += '</div>';
 					metadata_str += '<div class="media-body">';
-					metadata_str += '<h4 class="media-heading">Title</h4>';
+					metadata_str += '<h4 class="media-heading">' + value['feedid'] + '\t' + value['sensorid'] + '</h4> ';
+					metadata_str += value['feedTitle'] + '<br/>' + value['snapshot'];
 					metadata_str += '</div></div></div></div>';
-					
-// 					var metadata_str = "<div class=\"col-xs-12 col-sm-12 col-md-3\"><ul class=\"meta-search\">";
-// 					metadata_str +=	"<li><i class=\"glyphicon glyphicon-th-large\"></i><span>Feed ID: ";
-// 					metadata_str += value['feedid'] + "</span></li><li><i class=\"glyphicon glyphicon-th\"></i><span>Stream ID: ";
-// 					metadata_str += value['sensorid'] + "</span></li><li><i class=\"glyphicon glyphicon-time\"></i><span>Created Time:";
-// 					metadata_str += value['createdTime'] + "</span></li></ul></div>";
-					
-// 					var snapshort_str = "<div class=\"col-xs-12 col-sm-12 col-md-8 excerpet\"><h3><a href=\"#\" title=\"\">";
-// 					snapshort_str += value['feedTitle'];
-// 					snapshort_str += "</a></h3><p>";
-// 					snapshort_str += value['snapshot'];
-// 					snapshort_str += "</p></div><span class=\"clearfix borda\"></span>";
 
-					$('#search-result').append("<article class=\"search-result row\">" + metadata_str + snapshort_str + "</article>");
+					$('#search-result').append("<article class=\"search-result row\">" + metadata_str + "</article>");
 				});
-				
 				$('#search-result').show();
 		    }
 		})
 	}
 }
+
+// $('input-form').submit()
+
+// use openstreet for location picture
+function geo_url(){
+	
+}
+
+$('#search-button').on('click', searchit);
+
+$('#input-form').submit(function(event){
+	event.preventDefault();
+	searchit();
+});
+
 </script>
 </body>
 </html>
