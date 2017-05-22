@@ -14,16 +14,20 @@ public class SensorDocument implements Comparable<SensorDocument>{
 	
 	Long feedid;
 	String sensorid; // streamid in database, could be description
+	
 	String feedDescription;
 	String feedTags;
-	String sensorTags;
-	Double score; //similarity
+	String feedTitle; // fetched from DB
+	String feedUrl;
+	Double lat;
+	Double lng;
 	
+	String sensorTags;
 	String snapshot;
 	String createdTime;
 	String sensorLabel;
-	String feedTitle; // fetched from DB
 	String sensorDescription; // fetched from DB
+	Double score; //similarity
 	
 	public SensorDocument(){}
 	
@@ -143,5 +147,23 @@ public class SensorDocument implements Comparable<SensorDocument>{
 	}
 	public void setSensorLabel(String sensorLabel) {
 		this.sensorLabel = sensorLabel;
+	}
+	public String getFeedUrl() {
+		return feedUrl;
+	}
+	public void setFeedUrl(String feedUrl) {
+		this.feedUrl = feedUrl;
+	}
+	public Double getLat() {
+		return lat;
+	}
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+	public Double getLng() {
+		return lng;
+	}
+	public void setLng(Double lng) {
+		this.lng = lng;
 	}
 }

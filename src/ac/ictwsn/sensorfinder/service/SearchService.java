@@ -131,13 +131,6 @@ public class SearchService {
 		HashMap<Pair<Long, String>, Double> mergedRank = new HashMap<Pair<Long, String>, Double>();
 		List<SensorDocument> docList = new ArrayList<SensorDocument>(); 
 		
-		
-		Double maxLrank = Double.MIN_VALUE;
-		Double minLrank = Double.MAX_VALUE;
-		Double maxDrank = Double.MIN_VALUE;
-		Double minDrank = Double.MAX_VALUE;
-		
-		
 		// intersection set of dmr and lucene
 		for(Entry<Pair<Long, String>, SensorDocument> entry : dmrRank.entrySet()){
 			Pair<Long, String> pair = entry.getKey();
@@ -145,12 +138,6 @@ public class SearchService {
 				mergedRank.put(entry.getKey(), dmrRank.get(entry.getKey()).getScore());
 				Double lrank = - Math.log(lucRank.get(pair).getScore());
 				Double drank = Math.log(entry.getValue().getScore());
-				
-				maxLrank = Math.max(maxLrank, lrank);
-				minLrank = Math.min(minLrank, lrank);
-				maxDrank = Math.max(maxDrank, drank);
-				minDrank = Math.min(minDrank, drank);
-				
 				SensorDocument sensor = new SensorDocument(
 						pair.getFirst(), pair.getSecond(), (1-beta) * lrank + beta * drank); 
 				docList.add(sensor);
@@ -185,6 +172,12 @@ public class SearchService {
 			sd.setFeedDescription(feed.getDescription());
 			sd.setFeedTags(feed.getTags());
 			sd.getSnapshotWithUpdate();
+			
+			sd.setFeedUrl(feed.getFeedUrl());
+			if(feed.getLat() != null && !feed.getLat().equals(""))
+				sd.setLat(Double.parseDouble(feed.getLat()));
+			if(feed.getLng() != null && !feed.getLng().equals(""))
+				sd.setLng(Double.parseDouble(feed.getLng()));
 		}
 		result.setItemlist(docList);
 		return result;

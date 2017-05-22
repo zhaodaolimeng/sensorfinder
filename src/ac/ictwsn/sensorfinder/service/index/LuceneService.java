@@ -91,10 +91,10 @@ public class LuceneService {
 	 * Create a new thread to index
 	 * @param options
 	 */
-	public void startBuildLuceneIndex(ArrayList<String> options) {
+	public void startBuildLuceneIndex() {
 		logger.info("Ready to index ... ");
 		try {
-			luceneIndexingTask = new LuceneIndexingTask(options, sensorRepo, indexPath);
+			luceneIndexingTask = new LuceneIndexingTask(sensorRepo, indexPath);
 			Thread indexThread = new Thread(luceneIndexingTask);
 			indexThread.start();
 		} catch (IOException e) {
@@ -165,6 +165,12 @@ public class LuceneService {
 				item.setFeedTitle(feed.getTitle());
 				item.setFeedDescription(feed.getDescription());
 				item.setFeedTags(feed.getTags());
+				item.setFeedUrl(feed.getFeedUrl());
+				
+				if(feed.getLat() != null && !feed.getLat().equals(""))
+					item.setLat(Double.parseDouble(feed.getLat()));
+				if(feed.getLng() != null && !feed.getLng().equals(""))
+					item.setLng(Double.parseDouble(feed.getLng()));
 				
 				DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 				item.setCreatedTime(df.format(feed.getCreated()));

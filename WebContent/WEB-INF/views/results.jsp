@@ -10,11 +10,12 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="shortcut icon" href="resources/favicon.ico">
 
-    <link rel="stylesheet" href="../resources/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../resources/css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="../resources/css/main.css">
+    <link rel="stylesheet" href="resources/css/bootstrap.min.css">
+    <link rel="stylesheet" href="resources/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="resources/css/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.1.1/ol.css">
 
     <!--[if lt IE 9]>
         <script src="js/vendor/html5-3.6-respond-1.4.2.min.js"></script>
@@ -38,7 +39,7 @@
 
 					<div class="form-group text-center">
 						<a id="search-button" class="btn btn-primary">Search</a>
-						<a id="advanced-search-button" class="btn btn-default">Advanced search</a>
+						<a id="advanced-search-button" class="btn btn-default">Advanced Options</a>
 					</div>
 
 					<div class="form-group advanced-search-panel">
@@ -61,8 +62,7 @@
 
 												<fieldset class="col-xs-12 col-sm-6">
 													<input type="checkbox" name="search-location"
-														value="Option 2" autocomplete="off" checked>
-													ThingSpeak
+														value="Option 2" autocomplete="off" checked> ThingSpeak
 												</fieldset>
 											</div>
 										</div>
@@ -79,41 +79,25 @@
 
 										<div class="col-xs-8">
 											<div class="row">
+											
 												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option1" autocomplete="off" checked>
-													Keyword
+													<input type="radio" name="search-option" id="radio_keyword"
+														value="option1" autocomplete="off" checked> Keyword
+												</fieldset>
+												<fieldset class="col-xs-12 col-sm-6">
+													<input type="radio" name="search-option" id="radio_keyword_topic"
+														value="option2" autocomplete="off"> Topic and Keyword 
 												</fieldset>
 
-												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option2" autocomplete="off" checked> Topic
-												</fieldset>
-
-												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option3" autocomplete="off" checked> Time
-													stamp
-												</fieldset>
-
-												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option4" autocomplete="off" checked>
-													Spatial
-												</fieldset>
 											</div>
 										</div>
 									</div>
-
 									<div class="clearfix"></div>
-								</li>
-								<!-- end of options -->
+								</li> <!-- end of options -->
 							</ul>
-
 						</div>
 					</div>
 				</form>
-
 			</div>
 		</div>
 	</div>
@@ -124,11 +108,9 @@
 
 				<ul class="nav nav-tabs" role="tablist">
 					<li role="presentation" class="active"><a href="#results1"
-						aria-controls="results1" role="tab" data-toggle="tab">Results
-							tab 1</a></li>
+						aria-controls="results1" role="tab" data-toggle="tab">Text Results</a></li>
 					<li role="presentation"><a href="#results2"
-						aria-controls="results2" role="tab" data-toggle="tab">Results
-							tab 2</a></li>
+						aria-controls="results2" role="tab" data-toggle="tab">Location</a></li>
 				</ul>
 
 				<!-- Tab panes -->
@@ -137,22 +119,90 @@
 						<div class="list-group" id="search-result"></div>
 					</div>
 					<div role="tabpanel" class="tab-pane tab-body" id="results2">
-						...</div>
+						<div id="map" class="map" style="height:250px"></div>
+					</div>
 				</div>
-
 			</div>
 		</div>
 	</div>
 
-<script src="../resources/js/vendor/jquery-1.11.2.min.js"></script>
-<script src="../resources/js/vendor/bootstrap.min.js"></script>
-<script src="../resources/js/main.js"></script>
+<script src="resources/js/vendor/jquery-1.11.2.min.js"></script>
+<script src="resources/js/vendor/bootstrap.min.js"></script>
+<script src="resources/js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.1.1/ol.js"></script>
 <script type="text/javascript">
 
-var caption_init = false;
+// search result cache 
+var recent_result_list = null;
+var map = null;
 
+// set marker for a single sensor
+function createSensorOnMap(lat, lng){
+	var marker = new ol.Feature({
+		geometry: new ol.geom.Point(ol.proj.fromLonLat([lng, lat]))
+	});
+	var markerStyle = new ol.style.Style({
+		image: new ol.style.Icon(/** @type {olx.style.IconOptions} */ ({
+			anchor: [0.5, 46],
+			anchorXUnits: 'fraction',
+			anchorYUnits: 'pixels',
+			src: 'https://openlayers.org/en/v4.1.1/examples/data/icon.png'
+		}))
+	});
+	marker.setStyle(markerStyle);
+	return marker;
+}
+
+// set map
+$(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+	
+	if(recent_result_list == null)
+		return;
+	
+	// extract sensor location
+	var markerList = []
+	$.each(recent_result_list['itemlist'], function(index, value){
+		var lat = parseFloat(value['lat']);
+		var lng = parseFloat(value['lng']);
+		if(!isNaN(lat) && !isNaN(lng)){
+			markerList.push(createSensorOnMap(lat, lng))
+			console.log(lat + ' ' + lng);
+		}
+	});
+	var vectorLayer = new ol.layer.Vector({
+		source: new ol.source.Vector({
+			features: markerList
+		})
+	});
+	
+	if(map != null) {
+		vectorLayer.changed();
+	}else{
+		map = new ol.Map({
+			layers: [
+				new ol.layer.Tile({source: new ol.source.OSM()}),
+				vectorLayer
+			],
+			target: document.getElementById('map'),
+			view: new ol.View({
+				center: [0, 0],
+				zoom: 3
+			})
+		});
+	}
+})
+
+// set search action
 var searchit = function(event) {
+	
 	var text_val = $('#search-query').val()
+	var request_json = {query : text_val}
+	
+	if($("#radio_keyword:checked").val())
+		request_json.assistedWithTopic = false;
+	else
+		request_json.assistedWithTopic = true;
+	
 	if(text_val.length > 0){
 		console.log(text_val);		
 		$.ajax({
@@ -160,17 +210,13 @@ var searchit = function(event) {
 		    	'Accept': 'application/json',
 		        'Content-Type': 'application/json' 
 		    },
-		    url: 'search/mixedsearch',
+		    url: 'search/search',
 		    type: 'POST',
-		    data: JSON.stringify({query:text_val}),
+		    data: JSON.stringify(request_json),
 		    success : function(data) {
 		    	recent_result_list = data['content']['result'];
+		    	
 				console.log(recent_result_list);
-				if(caption_init === false){
-					$('#search-result').prepend('<h2>Search Results</h2>');
-					caption_init = true;
-				}
-				$('#search-result').empty();
 				
 				$.each(recent_result_list['itemlist'], function(index, value){
 					
@@ -178,7 +224,6 @@ var searchit = function(event) {
 					metadata_str += '<div class="panel-body">';
 					metadata_str += '<div class="media">'
 					metadata_str += '<div class="media-left">'
-// 					metadata_str += '<a href="#"> <img class="media-object" src="' + geo_url(value['location']) + '" alt="..."></a>';
 					metadata_str += '</div>';
 					metadata_str += '<div class="media-body">';
 					metadata_str += '<h4 class="media-heading">' + value['feedid'] + '\t' + value['sensorid'] + '</h4> ';
@@ -191,13 +236,6 @@ var searchit = function(event) {
 		    }
 		})
 	}
-}
-
-// $('input-form').submit()
-
-// use openstreet for location picture
-function geo_url(){
-	
 }
 
 $('#search-button').on('click', searchit);

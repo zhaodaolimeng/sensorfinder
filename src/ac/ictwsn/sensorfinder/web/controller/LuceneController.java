@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ac.ictwsn.sensorfinder.service.index.LuceneService;
 import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
-import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
+import ac.ictwsn.sensorfinder.web.model.QueryRequest;
 
 @RestController
 @RequestMapping("/lucene")
@@ -30,10 +30,10 @@ public class LuceneController {
 	@RequestMapping(value = "UpdateIndex", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody AjaxResponse buildIndex(
-			@RequestBody IndexBuildRequest request) {
+			@RequestBody QueryRequest request) {
 		logger.info("Start building lucene index...");
 		
-		luceneService.startBuildLuceneIndex(request.getOptions());
+		luceneService.startBuildLuceneIndex();
 		AjaxResponse response = new AjaxResponse();		
 		HashMap<String, Object> content = new HashMap<String, Object>();
 		

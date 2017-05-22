@@ -211,10 +211,9 @@ public class MalletService {
 	
 	/**
 	 * Use Mallet plugin for Topic extraction
-	 * @param options
 	 * @throws IOException 
 	 */
-	public void startBuildTopicIndex(ArrayList<String> options) {
+	public void startBuildTopicIndex() {
 		logger.info("Start building mallet index.");
 		malletIndexingTask = new MalletIndexingTask(indexPath, featureRepo);
 		Thread indexThread = new Thread(malletIndexingTask);

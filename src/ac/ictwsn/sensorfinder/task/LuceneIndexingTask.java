@@ -2,7 +2,6 @@ package ac.ictwsn.sensorfinder.task;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -25,22 +24,16 @@ public class LuceneIndexingTask implements Runnable{
 	
 	private IndexWriter indexWriter;
 	private TaskState state;
-	
 	SensorRepository sensorRepo;
-	
-	ArrayList<String> options;
-	
 	private String indexPath;
 	
 	/**
 	 * Create Indexing Instance 
-	 * @param options
 	 * @throws IOException 
 	 */
-	public LuceneIndexingTask(ArrayList<String> options, SensorRepository sensorRepo, String indexPath) 
+	public LuceneIndexingTask(SensorRepository sensorRepo, String indexPath) 
 			throws IOException{
 		this.sensorRepo = sensorRepo; //autowire may cause problem
-		this.options = options;
 		this.indexPath = indexPath;
 		this.state = TaskState.PROCESSING;
 	}
