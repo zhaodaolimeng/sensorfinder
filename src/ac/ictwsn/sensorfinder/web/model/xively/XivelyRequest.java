@@ -21,7 +21,7 @@ public class XivelyRequest {
 			"lat", "lon", "distance", "distance_unit",
 			"start", "end", "duration", "interval", "limit", "alive"};
 	
-	private String URL = "https://api.xively.com/v2/feeds/";
+	private String URL = "http://api.xively.com/v2/feeds/";
 	private final String X_API_KEY = "qFLtQIpZ5cBQqFP4AscSB4B7MUyLPVNpx4XdI9VIOZ5kp3Hg";
 	private final String charset = "UTF-8";
 	

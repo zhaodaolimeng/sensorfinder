@@ -25,7 +25,7 @@ div.tooltip {
     pointer-events: none;			
 }
 </style>
-<link href="resources/css/utils.css" rel="stylesheet">
+<link href="../resources/css/utils.css" rel="stylesheet">
 <link href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css" rel="stylesheet"/>
 <meta charset="utf-8">
 <title>Curiosity</title>
@@ -57,11 +57,11 @@ div.tooltip {
 						aria-expanded="false">
 						Draw based on <span class="caret"></span>
 					</button>
-					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-						<a class="dropdown-item" href="#">Topic vector</a>
-						<a class="dropdown-item" href="#">Document vector</a>
-						<a class="dropdown-item" href="#">Time and place relationship</a>
-					</div>
+					<ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						<li><a href="#">Topic vector</a></li>
+					    <li><a href="#">Document vector</a></li>
+					    <li><a href="#">Time and place relationship</a></li>
+					</ul>
 				</div>
 			</div>
 			<div class="row-fluid"><br/></div>
@@ -84,7 +84,7 @@ div.tooltip {
 <script src="https://code.jquery.com/jquery-1.12.3.js"></script>
 <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js" ></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script> -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script lang="javascript">
 
 $('#nav_list').children().eq(9).addClass('active');
@@ -99,8 +99,10 @@ var searchNode = null;
 $('#search-btn').on('click', function(){
 	
 	var svg = d3.select("svg");
-	svg.setAttribute("width",  960);
-	svg.setAttribute("height", 600);
+	svg.attr("width", 960);
+	svg.attr("height", 600);
+// 	svg.setAttribute("width",  960);
+// 	svg.setAttribute("height", 600);
 	
     width = +svg.attr("width"),
     height = +svg.attr("height");

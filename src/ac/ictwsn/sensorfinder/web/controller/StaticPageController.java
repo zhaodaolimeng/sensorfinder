@@ -9,27 +9,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class StaticPageController {
 	
-	private static final Logger logger = Logger.getLogger(StaticPageController.class); 
+	private static final Logger logger = Logger.getLogger(StaticPageController.class);
 	
-	/**
-	 * Default filter
-	 * @param model
-	 * @return
-	 */
+	@RequestMapping(value = "/admin", method = RequestMethod.GET)
+	public String adminDefault() {
+		return "redirect:admin/index";
+	}
+	
 	@RequestMapping(value = "/admin/{varPost}", method = RequestMethod.GET)
 	public String adminHop(@PathVariable("varPost") String destPage) {
 		logger.info("To Page = " + destPage);
 		return "admin/" + destPage;
 	}
 	
-	@RequestMapping(value = "/user/{varPost}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{varPost}", method = RequestMethod.GET)
 	public String userHop(@PathVariable("varPost") String destPage) {
 		logger.info("To Page = " + destPage);
-		return "user/" + destPage;
+		return destPage;
 	}
 	
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String welcome(){
-		return "user/index";
+		logger.info("Welcome!");
+		return "redirect:index";
 	}
 }

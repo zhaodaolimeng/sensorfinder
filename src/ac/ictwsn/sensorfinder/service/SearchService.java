@@ -109,7 +109,7 @@ public class SearchService {
 	public ResultDTO searchByLuceneAndTopic(String queryStr, int resultNum) 
 			throws IOException, InvalidTokenOffsetsException {
 		
-		final double beta = 0.4;
+		final double beta = 0.1;
 		
 		ResultDTO dmrScore = ms.computeDMRScore(queryStr);
 		ResultDTO luceneScore = ls.computeLuceneScore(queryStr, ms.getSensorNames().size());
@@ -152,8 +152,8 @@ public class SearchService {
 		});
 		
 		ResultDTO result = new ResultDTO();
-		if(resultNum != -1)
-			result.setItemlist(docList.subList(0, resultNum));
+		if(resultNum != -1) docList = docList.subList(0, resultNum);
+		result.setItemlist(docList);
 		
 		for(SensorDocument sd : docList){
 			Pair<Long, String> pair = new Pair<Long, String>(sd.getFeedid(), sd.getSensorid());
@@ -161,6 +161,23 @@ public class SearchService {
 			String lucSensorDesc = lucRank.get(pair).getSensorDescription();
 			sd.setFeedDescription(lucFeedDesc);
 			sd.setSensorDescription(lucSensorDesc);
+			sd.setSnapshot(sd.getFeedDescription() + sd.getFeedTitle() + sd.getSensorLabel() + sd.getSensorTags());
+			
+			// check datastream_t
+			Sensor sensor = sensorRepo.findByFeedAndStreamid(sd.getFeedid(), sd.getSensorid());
+			sd.setSensorLabel(sensor.getLabel());
+			
+			Feed feed = sensor.getFeed();
+			sd.setFeedTitle(feed.getTitle());
+			sd.setFeedDescription(feed.getDescription());
+			sd.setFeedTags(feed.getTags());
+			sd.getSnapshotWithUpdate();
+			
+			sd.setFeedUrl(feed.getFeedUrl());
+			if(feed.getLat() != null && !feed.getLat().equals(""))
+				sd.setLat(Double.parseDouble(feed.getLat()));
+			if(feed.getLng() != null && !feed.getLng().equals(""))
+				sd.setLng(Double.parseDouble(feed.getLng()));
 		}
 		result.setItemlist(docList);
 		return result;

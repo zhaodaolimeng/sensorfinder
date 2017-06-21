@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ac.ictwsn.sensorfinder.service.DescribeService;
 import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
-import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
+import ac.ictwsn.sensorfinder.web.model.QueryRequest;
 
 /**
  * 设备自动描述，即设备补全的控制模块
@@ -35,11 +35,11 @@ public class DescribeController {
 	@RequestMapping(value = "UpdateIndex", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody AjaxResponse buildIndex(
-			@RequestBody IndexBuildRequest request) {
+			@RequestBody QueryRequest request) {
 		logger.info("Trying to fix device descriptions...");
 		
 //		luceneService.startBuildLuceneIndex(request.getOptions());
-		describeService.refineDescription();
+//		describeService.refineDescription();
 		
 		AjaxResponse response = new AjaxResponse();		
 		HashMap<String, Object> content = new HashMap<String, Object>();

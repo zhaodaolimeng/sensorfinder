@@ -18,7 +18,7 @@ import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
 import ac.ictwsn.sensorfinder.web.model.CrawlRequest;
 
 @RestController
-@RequestMapping("/crawl")
+@RequestMapping("/admin")
 public class CrawlerController {
 
 	private static final Logger logger = Logger.getLogger(CrawlerController.class); 
@@ -30,7 +30,7 @@ public class CrawlerController {
 	 * Quickly count Xively
 	 * @return
 	 */
-	@RequestMapping(value = "SimpleCount", method = RequestMethod.POST, 
+	@RequestMapping(value = "/crawl/SimpleCount", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody AjaxResponse simpleCount(
 			@RequestBody CrawlRequest request) {
@@ -47,7 +47,7 @@ public class CrawlerController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "UpdateAllFeed", method = RequestMethod.POST,
+	@RequestMapping(value = "/crawl/UpdateAllFeed", method = RequestMethod.POST,
 			consumes = "application/json", produces = "application/json")
 	public AjaxResponse updateAllFeed(
 			@RequestBody CrawlRequest request, HttpSession session) {

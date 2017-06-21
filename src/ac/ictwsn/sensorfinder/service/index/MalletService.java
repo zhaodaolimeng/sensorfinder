@@ -211,10 +211,9 @@ public class MalletService {
 	
 	/**
 	 * Use Mallet plugin for Topic extraction
-	 * @param options
 	 * @throws IOException 
 	 */
-	public void startBuildTopicIndex(ArrayList<String> options) {
+	public void startBuildTopicIndex() {
 		logger.info("Start building mallet index.");
 		malletIndexingTask = new MalletIndexingTask(indexPath, featureRepo);
 		Thread indexThread = new Thread(malletIndexingTask);
@@ -234,8 +233,6 @@ public class MalletService {
 	public List<String> getNameList(){
 		return this.sensorNameList;
 	}
-	
-	
 	
 	/**
 	 * Get documents with topnum largest DMR scores
@@ -293,7 +290,6 @@ public class MalletService {
 		
 		ResultDTO result = new ResultDTO();
 		result.setItemlist(docList);
-		
 		return result;
 	}
 	
@@ -315,6 +311,11 @@ public class MalletService {
 		
 		List<String> nameList = this.sensorNameList; // load from MalletIndex.java
 		Sensor tsensor = sensorRepo.findByFeedAndStreamid(feedid, streamid);
+		
+		if(tsensor == null){
+			//TODO not found
+		}
+		
 		String targetSensorName = feedid + "," + streamid;
 		logger.info("Sensor found at datastream_t for id = " + tsensor.getId());
 		

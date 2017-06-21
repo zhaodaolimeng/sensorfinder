@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ac.ictwsn.sensorfinder.dto.ResultDTO;
 import ac.ictwsn.sensorfinder.service.SearchService;
 import ac.ictwsn.sensorfinder.service.index.LuceneService;
 import ac.ictwsn.sensorfinder.service.index.MalletService;
 import ac.ictwsn.sensorfinder.web.model.AjaxResponse;
 import ac.ictwsn.sensorfinder.web.model.D3Response;
-import ac.ictwsn.sensorfinder.web.model.IndexBuildRequest;
+import ac.ictwsn.sensorfinder.web.model.QueryRequest;
 import ac.ictwsn.sensorfinder.web.model.SearchRequest;
 
 @RestController
-@RequestMapping("/admin/search")
 public class SearchController {
 	
 	private static final Logger logger = Logger.getLogger(SearchController.class);
@@ -51,7 +51,7 @@ public class SearchController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "visual.json", method = RequestMethod.POST, 
+	@RequestMapping(value = "admin/search/visual.json", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody D3Response visualContent(
 			@RequestBody SearchRequest request) {
@@ -84,16 +84,23 @@ public class SearchController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "search", method = RequestMethod.POST, 
+	@RequestMapping(value = "search/search", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody AjaxResponse fullTextQuery(
-			@RequestBody IndexBuildRequest request){
+			@RequestBody QueryRequest request){
 		
 		AjaxResponse response = new AjaxResponse();
 		try {
-			logger.info("Request = " + request.getQuery());
+			logger.info("Request = " + request.getQuery() + ", assisted with topic = " + request.isAssistedWithTopic());
 			HashMap<String, Object> content = new HashMap<String, Object>();
-			content.put("result", luceneService.search(request.getQuery()));
+			
+			ResultDTO dto = null;
+			if(request.isAssistedWithTopic())
+				dto = searchService.searchByLuceneAndTopic(request.getQuery(), 20);
+			else
+				dto = luceneService.search(request.getQuery());
+			
+			content.put("result", dto);
 			response.setContent(content);
 		} catch (IOException | InvalidTokenOffsetsException e) {
 			e.printStackTrace();
@@ -101,25 +108,4 @@ public class SearchController {
 		return response;
 	}
 	
-	/**
-	 * Mixed search using topics and full text
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "mixedsearch", method = RequestMethod.POST, 
-			consumes = "application/json", produces = "application/json")
-	public @ResponseBody AjaxResponse topicAndTextQuery(
-			@RequestBody IndexBuildRequest request){
-		
-		AjaxResponse response = new AjaxResponse();
-		try {
-			logger.info("Request = " + request.getQuery());
-			HashMap<String, Object> content = new HashMap<String, Object>();
-			content.put("result", luceneService.search(request.getQuery()));
-			response.setContent(content);
-		} catch (IOException | InvalidTokenOffsetsException e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
 }

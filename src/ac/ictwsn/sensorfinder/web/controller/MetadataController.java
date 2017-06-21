@@ -24,7 +24,7 @@ public class MetadataController {
     private FeedRepository feedRepository;
 
     @JsonView(DataTablesOutput.View.class)
-    @RequestMapping(value = "crawl/showMetadata", method = RequestMethod.GET)
+    @RequestMapping(value = "/admin/crawl/showMetadata", method = RequestMethod.GET)
     public DataTablesOutput<Feed> getMetadata(@Valid DataTablesInput input) {
     	logger.info("in show metadata");
     	DataTablesOutput<Feed> result = feedRepository.findAll(input);

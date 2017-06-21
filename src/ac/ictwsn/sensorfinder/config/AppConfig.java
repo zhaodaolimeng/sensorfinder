@@ -47,8 +47,8 @@ import com.mysql.jdbc.Driver;
 @EnableCaching
 @EnableAsync
 @EnableJpaRepositories(
-		basePackages = {"ac.ictwsn.sensorfinder.repositories"}, 
-		repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class)
+		repositoryFactoryBeanClass = DataTablesRepositoryFactoryBean.class,
+		basePackages = {"ac.ictwsn.sensorfinder.repositories"})
 @EnableTransactionManagement
 @PropertySource(value = {"classpath:application.properties"})
 public class AppConfig {
