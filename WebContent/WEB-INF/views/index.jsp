@@ -41,7 +41,7 @@
 					</div>
 
 					<div class="form-group text-center">
-						<button type="submit" class="btn btn-primary">Search</button>
+						<button type="button" class="btn btn-primary" id='do-search'>Search</button>
 						<a id="advanced-search-button" class="btn btn-default">Advanced
 							search</a>
 					</div>
@@ -60,12 +60,12 @@
 										<div class="col-xs-8">
 											<div class="row">
 												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
+													<input type="checkbox" name="search-location" id="source-is-xively"
 														value="option1" autocomplete="off" checked> Xively
 												</fieldset>
 
 												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
+													<input type="checkbox" name="search-location" id="source-is-thingspeak"
 														value="Option 2" autocomplete="off" checked>
 													ThingSpeak
 												</fieldset>
@@ -85,26 +85,12 @@
 										<div class="col-xs-8">
 											<div class="row">
 												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option1" autocomplete="off" checked>
-													Keyword
+													<input type="radio" name="search-option" id="radio_keyword"
+														value="option1" autocomplete="off" checked> Keyword
 												</fieldset>
-
 												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option2" autocomplete="off" checked> Topic
-												</fieldset>
-
-												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option3" autocomplete="off" checked> Time
-													stamp
-												</fieldset>
-
-												<fieldset class="col-xs-12 col-sm-6">
-													<input type="checkbox" name="search-location"
-														value="option4" autocomplete="off" checked>
-													Spatial
+													<input type="radio" name="search-option" id="radio_keyword_topic"
+														value="option2" autocomplete="off"> Topic and Keyword 
 												</fieldset>
 											</div>
 										</div>
@@ -135,6 +121,23 @@
 		$(document).ready(function($) {
 			$('#tabs').tab();
 		});
+		
+		$('#do-search').click(function(){
+			var q = encodeURIComponent($('#search-query').val());
+			var option1 = encodeURIComponent($('#source-is-xively').is(':checked'));
+			var option2 = encodeURIComponent($('#source-is-thingspeak').is(':checked'));
+			var radio = 0;
+			var radio_choices = ['radio_keyword', 'radio_keyword_topic'];
+			for(var i=0; i<radio_choices.length; i++){
+				if($('#'+radio_choices[i])==true){
+					radio = i;
+					break;
+				}
+			}
+			radio = encodeURIComponent(radio);
+			window.location = '../results?q=' + q + '&opt1=' + option1 + '&opt2=' + option2 + '&radio=' + radio;
+		});
+		
 	</script>
 	
 </body>

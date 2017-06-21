@@ -79,7 +79,6 @@
 
 										<div class="col-xs-8">
 											<div class="row">
-											
 												<fieldset class="col-xs-12 col-sm-6">
 													<input type="radio" name="search-option" id="radio_keyword"
 														value="option1" autocomplete="off" checked> Keyword
@@ -88,7 +87,6 @@
 													<input type="radio" name="search-option" id="radio_keyword_topic"
 														value="option2" autocomplete="off"> Topic and Keyword 
 												</fieldset>
-
 											</div>
 										</div>
 									</div>
@@ -128,7 +126,6 @@
 
 <script src="resources/js/vendor/jquery-1.11.2.min.js"></script>
 <script src="resources/js/vendor/bootstrap.min.js"></script>
-<script src="resources/js/main.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.1.1/ol.js"></script>
 <script type="text/javascript">
 
@@ -193,7 +190,7 @@ $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
 })
 
 // set search action
-var searchit = function(event) {
+var searchit = function() {
 	
 	var text_val = $('#search-query').val()
 	var request_json = {query : text_val}
@@ -242,6 +239,28 @@ $('#input-form').submit(function(event){
 	event.preventDefault();
 	searchit();
 });
+
+//check if parameter is set
+var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName, i;
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] === sParam) 
+            return sParameterName[1] === undefined ? true : sParameterName[1];
+    }
+};
+
+if(undefined !== getUrlParameter('q')){
+	$('#search-query').val(getUrlParameter('q'));
+	//TODO datasource selector is not used, currently all the data is from Xively
+	// var option1 = getUrlParameter('opt1');
+	// var option2 = getUrlParameter('opt2');
+	var radio_list = ['#radio_keyword', '#radio_keyword_topic'];
+	$(radio_list[parseInt(getUrlParameter('radio'))]).prop("checked", true);
+	searchit();
+}
 
 </script>
 </body>
