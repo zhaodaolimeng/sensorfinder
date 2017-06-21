@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CrawlRequest {
 	
-	@JsonProperty("isalive")
+	@JsonProperty("alive")
 	Boolean alive;
 	@JsonProperty("startat")
 	String startat;

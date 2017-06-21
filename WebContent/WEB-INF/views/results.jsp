@@ -216,10 +216,9 @@ var searchit = function(event) {
 		    success : function(data) {
 		    	recent_result_list = data['content']['result'];
 		    	
-				console.log(recent_result_list);
-				
+				// console.log(recent_result_list);
+				$('#search-result').empty();
 				$.each(recent_result_list['itemlist'], function(index, value){
-					
 					var metadata_str = '<div class="panel panel-default list-group-item">';
 					metadata_str += '<div class="panel-body">';
 					metadata_str += '<div class="media">'
@@ -229,7 +228,6 @@ var searchit = function(event) {
 					metadata_str += '<h4 class="media-heading">' + value['feedid'] + '\t' + value['sensorid'] + '</h4> ';
 					metadata_str += value['feedTitle'] + '<br/>' + value['snapshot'];
 					metadata_str += '</div></div></div></div>';
-
 					$('#search-result').append("<article class=\"search-result row\">" + metadata_str + "</article>");
 				});
 				$('#search-result').show();

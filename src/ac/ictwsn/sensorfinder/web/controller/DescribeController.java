@@ -39,7 +39,7 @@ public class DescribeController {
 		logger.info("Trying to fix device descriptions...");
 		
 //		luceneService.startBuildLuceneIndex(request.getOptions());
-		describeService.refineDescription();
+//		describeService.refineDescription();
 		
 		AjaxResponse response = new AjaxResponse();		
 		HashMap<String, Object> content = new HashMap<String, Object>();

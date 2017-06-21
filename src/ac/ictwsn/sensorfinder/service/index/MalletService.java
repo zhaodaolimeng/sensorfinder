@@ -234,8 +234,6 @@ public class MalletService {
 		return this.sensorNameList;
 	}
 	
-	
-	
 	/**
 	 * Get documents with topnum largest DMR scores
 	 *  
@@ -292,7 +290,6 @@ public class MalletService {
 		
 		ResultDTO result = new ResultDTO();
 		result.setItemlist(docList);
-		
 		return result;
 	}
 	
@@ -314,6 +311,11 @@ public class MalletService {
 		
 		List<String> nameList = this.sensorNameList; // load from MalletIndex.java
 		Sensor tsensor = sensorRepo.findByFeedAndStreamid(feedid, streamid);
+		
+		if(tsensor == null){
+			//TODO not found
+		}
+		
 		String targetSensorName = feedid + "," + streamid;
 		logger.info("Sensor found at datastream_t for id = " + tsensor.getId());
 		

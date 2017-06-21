@@ -6,7 +6,7 @@
 <meta charset="utf-8">
 <title>Curiosity</title>
 <link href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
-<link href="resources/css/utils.css" rel="stylesheet">
+<link href="../resources/css/utils.css" rel="stylesheet">
 </head>
 <body>
 <div class="span9">
@@ -72,7 +72,7 @@
 
 <script src="https://code.jquery.com/jquery-1.12.3.js"></script>
 <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<script src="resources/js/jquery.spring-friendly.js"></script>
+<script src="../resources/js/jquery.spring-friendly.js"></script>
 
 <script lang="javascript">
 

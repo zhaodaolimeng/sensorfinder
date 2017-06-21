@@ -22,7 +22,6 @@ import ac.ictwsn.sensorfinder.web.model.QueryRequest;
 import ac.ictwsn.sensorfinder.web.model.SearchRequest;
 
 @RestController
-@RequestMapping("/search")
 public class SearchController {
 	
 	private static final Logger logger = Logger.getLogger(SearchController.class);
@@ -52,7 +51,7 @@ public class SearchController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "visual.json", method = RequestMethod.POST, 
+	@RequestMapping(value = "admin/search/visual.json", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody D3Response visualContent(
 			@RequestBody SearchRequest request) {
@@ -85,7 +84,7 @@ public class SearchController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "search", method = RequestMethod.POST, 
+	@RequestMapping(value = "search/search", method = RequestMethod.POST, 
 			consumes = "application/json", produces = "application/json")
 	public @ResponseBody AjaxResponse fullTextQuery(
 			@RequestBody QueryRequest request){

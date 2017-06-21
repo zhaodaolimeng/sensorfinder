@@ -54,12 +54,14 @@ public class XivelyAccessService {
 		request.config("page", "1").config("per_page", "2").config("content", "summary");
 		if(alive)
 			request.config("status", "live");
+		
 		XivelyFeedResponse response = null;
 		try {
 			response = (XivelyFeedResponse) 
 					XivelyUtils.sendRequestToXively(request, XivelyFeedResponse.class);
 		} catch (IOException e) {
 			logger.error("Broken IO detected, retry.");
+			e.printStackTrace();
 			return -1;
 		}
 		int total = response.getTotalResults(); 

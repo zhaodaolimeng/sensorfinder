@@ -11,14 +11,14 @@ public class DescribeService {
 	
 	private static final Logger logger = Logger.getLogger(DescribeService.class);
 	
-	@Autowired
-	private SensorRepository datastreamRepo;
+//	@Autowired
+//	private SensorRepository datastreamRepo;
 
 	
-	public void refineDescription() {
-		
-		
-		
-	}
+//	public void refineDescription() {
+//		
+//		
+//		
+//	}
 
 }
